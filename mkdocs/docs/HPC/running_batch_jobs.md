@@ -88,7 +88,7 @@ command, you can replace `module` with `ml`.
 A large number of software packages are installed on the {{ hpc }} clusters. A
 list of all currently available software can be obtained by typing:
 
-<pre><code><b>$ module available</b>
+<pre><code><b>module available</b>
 </code></pre>
 
 It's also possible to execute `module av` or `module avail`, these are
@@ -123,7 +123,7 @@ E.g., `foss/{{ current_year}}a` is the first version of the `foss` toolchain in 
 The toolchains are then used to compile a lot of the software installed
 on the VSC clusters. You can recognise those packages easily as they all
 contain the name of the toolchain after the version number in their name
-(e.g., `Python/2.7.12-intel-2016b`). Only packages compiled with the
+(e.g., `scikit-learn/1.1.2-foss-2022a`). Only packages compiled with the
 same toolchain name and version can work together without conflicts.
 
 ### Loading and unloading modules
@@ -133,28 +133,28 @@ same toolchain name and version can work together without conflicts.
 To "activate" a software package, you load the corresponding module file
 using the `module load` command:
 
-<pre><code><b>$ module load example</b>
+<pre><code><b>module load zlib</b>
 </code></pre>
 
-This will load the most recent version of *example*.
+This will load the most recent version of *zlib*.
 
 For some packages, multiple versions are installed; the load command
 will automatically choose the default version (if it was set by the
 system administrators) or the most recent version otherwise (i.e., the
 lexicographical last after the `/`).
 
-**However, you should specify a particular version to avoid surprises when newer versions are installed:
+**However, you should specify a particular version to avoid surprises when newer versions are installed:**
 
-<pre><code><b>$ module load secondexample/2.7-intel-2016b</b>
+<pre><code><b>module load Python/3.10.4-GCCcore-11.3.0</b>
 </code></pre>
 
-The `ml` command is a shorthand for `module load`: `ml example/1.2.3` is
-equivalent to `module load example/1.2.3`.
+The `ml` command is a shorthand for `module load`: `ml ...` is
+equivalent to `module load ...`.
 
 Modules need not be loaded one by one; the two `module load` commands
 can be combined as follows:
 
-<pre><code><b>$ module load example/1.2.3 secondexample/2.7-intel-2016b</b>
+<pre><code><b>module load Python/3.10.4-GCCcore-11.3.0 scikit-learn/1.1.2-foss-2022a</b>
 </code></pre>
 
 This will load the two modules as well as their dependencies (unless
@@ -167,22 +167,31 @@ currently loaded. Assuming you have run the `module load` commands
 stated above, you will get the following:
 
 <pre><code><b>$ module list</b>
-Currently Loaded Modulefiles: 
-1) example/1.2.3                                        6) imkl/11.3.3.210-iimpi-2016b 
-2) GCCcore/5.4.0                                        7) intel/2016b 
-3) icc/2016.3.210-GCC-5.4.0-2.26                        8) examplelib/1.2-intel-2016b 
-4) ifort/2016.3.210-GCC-5.4.0-2.26                      9) secondexample/2.7-intel-2016b 
-5) impi/5.1.3.181-iccifort-2016.3.210-GCC-5.4.0-2.26
+Currently Loaded Modules:
+  1) env/vsc/doduo                    (S)  14) GMP/6.2.1-GCCcore-11.3.0          27) UCC/1.0.0-GCCcore-11.3.0
+  2) env/slurm/doduo                  (S)  15) libffi/3.4.2-GCCcore-11.3.0       28) OpenMPI/4.1.4-GCC-11.3.0
+  3) env/software/doduo               (S)  16) OpenSSL/1.1                       29) OpenBLAS/0.3.20-GCC-11.3.0
+  4) cluster/doduo                    (S)  17) Python/3.10.4-GCCcore-11.3.0      30) FlexiBLAS/3.2.0-GCC-11.3.0
+  5) GCCcore/11.3.0                        18) GCC/11.3.0                        31) FFTW/3.3.10-GCC-11.3.0
+  6) zlib/1.2.12-GCCcore-11.3.0            19) numactl/2.0.14-GCCcore-11.3.0     32) gompi/2022a
+  7) binutils/2.38-GCCcore-11.3.0          20) libxml2/2.9.13-GCCcore-11.3.0     33) FFTW.MPI/3.3.10-gompi-2022a
+  8) bzip2/1.0.8-GCCcore-11.3.0            21) libpciaccess/0.16-GCCcore-11.3.0  34) ScaLAPACK/2.2.0-gompi-2022a-fb
+  9) ncurses/6.3-GCCcore-11.3.0            22) hwloc/2.7.1-GCCcore-11.3.0        35) foss/2022a
+ 10) libreadline/8.1.2-GCCcore-11.3.0      23) libevent/2.1.12-GCCcore-11.3.0    36) pybind11/2.9.2-GCCcore-11.3.0
+ 11) Tcl/8.6.12-GCCcore-11.3.0             24) UCX/1.12.1-GCCcore-11.3.0         37) SciPy-bundle/2022.05-foss-2022a
+ 12) SQLite/3.38.3-GCCcore-11.3.0          25) libfabric/1.15.1-GCCcore-11.3.0   38) scikit-learn/1.1.2-foss-2022a
+ 13) XZ/5.2.5-GCCcore-11.3.0               26) PMIx/4.1.2-GCCcore-11.3.0
 </code></pre>
+<sub>The **S** means that these modules are sticky, will be explained later in this chapter.</sub>
 
 You can also just use the `ml` command without arguments to list loaded modules.
 
 It is important to note at this point that other modules (e.g.,
-`intel/2016b`) are also listed, although the user did not explicitly
-load them. This is because `secondexample/2.7-intel-2016b` depends on it
+`foss/2022a`) are also listed, although the user did not explicitly
+load them. This is because `scikit-learn/1.1.2-foss-2022a` depends on it
 (as indicated in its name), and the system administrator specified that
-the `intel/2016b` module should be loaded whenever *this*
-`secondexample` module is loaded. There are advantages and disadvantages
+the `foss/2022a` module should be loaded whenever *this*
+`scikit-learn` module is loaded. There are advantages and disadvantages
 to this, so be aware of automatically loaded modules whenever things go wrong: they may have something to do with it!
 
 #### module unload
@@ -191,20 +200,30 @@ To unload a module, one can use the `module unload` command. It works
 consistently with the `load` command, and reverses the latter's effect.
 However, the dependencies of the package are NOT automatically unloaded;
 you will have to unload the packages one by one. When the
-`secondexample` module is unloaded, only the following modules remain:
+`scikit-learn` module is unloaded, only the following modules remain:
 
-<pre><code><b>$ module unload secondexample</b>
+<pre><code><b>$ module unload scikit-learn</b>
 <b>$ module list</b>
-Currently Loaded Modulefiles: 
-Currently Loaded Modulefiles: 
-1) example/1.2.3                        5) impi/5.1.3.181-iccifort-2016.3.210-GCC-5.4.0-2.26 
-2) GCCcore/5.4.0                        6) imkl/11.3.3.210-iimpi-2016b 
-3) icc/2016.3.210-GCC-5.4.0-2.26        7) intel/2016b 
-4) ifort/2016.3.210-GCC-5.4.0-2.26      8) examplelib/1.2-intel-2016b
+Currently Loaded Modules:
+  1) env/vsc/doduo                    (S)  14) GMP/6.2.1-GCCcore-11.3.0          27) OpenMPI/4.1.4-GCC-11.3.0
+  2) env/slurm/doduo                  (S)  15) libffi/3.4.2-GCCcore-11.3.0       28) OpenBLAS/0.3.20-GCC-11.3.0
+  3) env/software/doduo               (S)  16) OpenSSL/1.1                       29) FlexiBLAS/3.2.0-GCC-11.3.0
+  4) cluster/doduo                    (S)  17) GCC/11.3.0                        30) FFTW/3.3.10-GCC-11.3.0
+  5) GCCcore/11.3.0                        18) numactl/2.0.14-GCCcore-11.3.0     31) gompi/2022a
+  6) zlib/1.2.12-GCCcore-11.3.0            19) libxml2/2.9.13-GCCcore-11.3.0     32) FFTW.MPI/3.3.10-gompi-2022a
+  7) binutils/2.38-GCCcore-11.3.0          20) libpciaccess/0.16-GCCcore-11.3.0  33) ScaLAPACK/2.2.0-gompi-2022a-fb
+  8) bzip2/1.0.8-GCCcore-11.3.0            21) hwloc/2.7.1-GCCcore-11.3.0        34) <b>foss-2022a</b>
+  9) ncurses/6.3-GCCcore-11.3.0            22) libevent/2.1.12-GCCcore-11.3.0    35) pybind11/2.9.2-GCCcore-11.3.0
+ 10) libreadline/8.1.2-GCCcore-11.3.0      23) UCX/1.12.1-GCCcore-11.3.0         36) SciPy-bundle/2022.05-foss-2022a
+ 11) Tcl/8.6.12-GCCcore-11.3.0             24) libfabric/1.15.1-GCCcore-11.3.0   37) Python/3.10.4-GCCcore-11.3.0
+ 12) SQLite/3.38.3-GCCcore-11.3.0          25) PMIx/4.1.2-GCCcore-11.3.0
+ 13) XZ/5.2.5-GCCcore-11.3.0
 </code></pre>
 
-To unload the `secondexample` module, you can also use
-`ml -secondexample`.
+Note that `foss-2022a` is still loaded.
+
+To unload the `scikit-learn` module, you can also use
+`ml -scikit-learn`.
 
 Notice that the version was not specified: there can only be one version
 of a module loaded at a time, so unloading modules by name is not
@@ -289,7 +308,7 @@ and `module load` commands.
 
 With the `module spider` command, you can search for modules:
 
-<pre><code><b>$ module spider example</b>
+<pre><code><b>module spider example</b>
 --------------------------------------------------------------------------------
   example:
 --------------------------------------------------------------------------------
